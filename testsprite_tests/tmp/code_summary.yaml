@@ -1,0 +1,75 @@
+version: "2"
+type: frontend
+tech_stack:
+  - react
+  - vite
+  - javascript
+  - css
+  - supabase
+routes:
+  - path: /
+    file: src/App.jsx
+    auth_required: false
+    description: Main orchestrator and authentication wrapper
+  - path: /profile
+    file: src/components/Profile.jsx
+    auth_required: true
+    description: User profile dashboard with activity heatmap and rank card
+  - path: /workout
+    file: src/components/WorkoutLogger.jsx
+    auth_required: true
+    description: Workout logging and tracking interface
+  - path: /leaderboard
+    file: src/components/Leaderboard.jsx
+    auth_required: true
+    description: Leaderboard ranking display
+  - path: /coach
+    file: src/components/CoachPanel.jsx
+    auth_required: true
+    description: Coach panel for custom program assignment
+features:
+  - name: Authentication
+    description: User login and registration via Supabase
+    files:
+      - src/components/Auth.jsx
+      - src/context/AuthContext.jsx
+    entry_route: /
+    user_interactions:
+      - Enter username
+      - Click Login/Register button
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth
+    auth_required: false
+  - name: Workout Tracking
+    description: Logging daily workouts and tracking volume
+    files:
+      - src/components/WorkoutLogger.jsx
+      - src/components/WorkoutTracker.jsx
+      - src/hooks/useUserData.js
+      - src/core/eloCalculator.js
+    entry_route: /workout
+    user_interactions:
+      - Select daily routine
+      - Log sets, reps, and weights for exercises
+      - Finish workout and view summary
+    api_calls:
+      - method: POST
+        endpoint: supabase.workouts
+    auth_required: true
+  - name: Profile Activity & Rank
+    description: Visualizing workout history and gamified rank
+    files:
+      - src/components/Profile.jsx
+      - src/components/ActivityHeatmap.jsx
+      - src/components/RankCard.jsx
+    entry_route: /profile
+    user_interactions:
+      - View ELO score and rank tier
+      - View activity calendar heatmap
+      - Click on heatmap day to see workout details
+    api_calls:
+      - method: GET
+        endpoint: supabase.workouts
+    auth_required: true
+known_limitations: []

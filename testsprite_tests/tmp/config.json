@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5174",
+  "executionArgs": {
+    "projectName": "Gym-Gamer",
+    "projectPath": "c:\\Users\\emre\\gym app",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-ylP8T4bOaB-mDOXAfXrF92hzofXne1VWu7YIAc06BuXElMSqXJgExD_GfKZUhFxKV-TZL9ShkPDG6oti0qvI7SdU6AOq-rdH-cEdwrrLI_wSCVsDN_sJCCSX23S0hX9kXTw"
+    }
+  },
+  "serverPort": 57197,
+  "proxy": "http://b5e6c070-ea9d-459a-86d9-80a0ec9e0467:JNrwOLBQIE45zC1caXMXUeakOI7dUEqw@tun.testsprite.com:8080"
+}

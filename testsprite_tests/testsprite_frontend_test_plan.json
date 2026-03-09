@@ -1,0 +1,1089 @@
+[
+  {
+    "id": "TC001",
+    "title": "Log a complete workout session and view summary with updated ELO",
+    "description": "Verifies an authenticated user can select a routine, log multiple exercises, finish the workout, and see a summary including an updated ELO/rank indicator.",
+    "category": "Workout Tracking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\" or \"/workout\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid number into the \"Sets\" field for the first exercise"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Finish workout after logging first exercise and confirm summary is shown",
+    "description": "Verifies finishing a workout after logging at least one exercise shows a workout summary view.",
+    "category": "Workout Tracking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\" or \"/workout\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Finish workout\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Log sets, reps, and weight for an exercise with valid values",
+    "description": "Verifies the workout logger accepts valid numeric inputs for a single exercise entry.",
+    "category": "Workout Tracking",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Workout\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sets\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Log multiple exercises in the same workout session",
+    "description": "Verifies the user can enter training data for more than one exercise before finishing the workout.",
+    "category": "Workout Tracking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid number into the \"Reps\" field for the first exercise"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the next exercise section"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Validation: invalid sets/reps/weight prevents finishing and shows error",
+    "description": "Verifies entering invalid numeric values causes a visible validation error and blocks finishing the workout.",
+    "category": "Workout Tracking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Type \"-1\" into the \"Weight\" field for the first exercise"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Finish workout\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Validation recovery: correct invalid values and successfully finish workout",
+    "description": "Verifies a user can correct invalid inputs after seeing a validation error and then finish to reach the summary.",
+    "category": "Workout Tracking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Type \"0\" into the \"Reps\" field for the first exercise"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"error\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Summary content: verify workout summary view contains session totals",
+    "description": "Verifies the post-finish summary displays visible session summary information (such as totals/volume/exercise list).",
+    "category": "Workout Tracking",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Finish workout\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Summary\" or \"Workout Summary\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "ELO indicator changes visibility after finishing workout",
+    "description": "Verifies that after finishing a workout, an ELO/rank-related indicator is visible on the summary or profile area.",
+    "category": "Workout Tracking",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" or \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Workout\" in the main navigation/menu"
+      },
+      {
+        "type": "action",
+        "description": "Select a daily routine from the routine selector"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Finish workout\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"ELO\" or \"Rank\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "View RankCard with ELO score and rank tier on Profile",
+    "description": "Verifies that an authenticated user can access the Profile page and see the ELO score and rank tier on the RankCard.",
+    "category": "Profile Activity & Rank",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"ELO\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Rank\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "View activity calendar heatmap on Profile",
+    "description": "Verifies that an authenticated user can see the activity calendar heatmap on the Profile page.",
+    "category": "Profile Activity & Rank",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Activity\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"activity heatmap\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Drill down from heatmap day to workout details",
+    "description": "Verifies that clicking a day in the activity heatmap shows the workout details for that selected day.",
+    "category": "Profile Activity & Rank",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click on a heatmap day cell that shows activity (a colored/non-empty day)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Workout\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"workout details panel\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Empty-state shown when no recent workout data is available",
+    "description": "Verifies that the Profile page shows an empty-state message and a call-to-action to log a workout when there is no recent workout activity shown.",
+    "category": "Profile Activity & Rank",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No workouts\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Log a workout\" call-to-action is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Empty-state CTA navigates to Workout Logger",
+    "description": "Verifies that clicking the empty-state CTA from Profile takes the user to the Workout Logger page.",
+    "category": "Profile Activity & Rank",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log a workout\" call-to-action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/workout\""
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Heatmap day click with no workout shows no-details messaging",
+    "description": "Verifies that clicking a heatmap day without activity does not show workout details and instead shows a no-workout message (or keeps details empty).",
+    "category": "Profile Activity & Rank",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click on a heatmap day cell that shows no activity (an empty/uncolored day)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No workout\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "RankCard remains visible after selecting a heatmap day",
+    "description": "Verifies that selecting a heatmap day to view workout details does not remove or hide the RankCard information.",
+    "category": "Profile Activity & Rank",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click on a heatmap day cell that shows activity (a colored/non-empty day)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"ELO\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Rank\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "View leaderboard list sorted by ELO with rank and ELO values",
+    "description": "Verifies the leaderboard page loads and shows a ranked list with ELO values visible.",
+    "category": "Leaderboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Leaderboard\" in the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/leaderboard\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Leaderboard\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Leaderboard shows multiple entries with visible rank positions",
+    "description": "Verifies that the leaderboard renders user entries with rank numbering/positions visible.",
+    "category": "Leaderboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Leaderboard\" in the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/leaderboard\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Rank\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"ELO\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Open a user entry from the leaderboard to view public profile or rank details",
+    "description": "Verifies clicking a user entry navigates to a details view (if available) and shows user/rank info.",
+    "category": "Leaderboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Leaderboard\" in the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/leaderboard\""
+      },
+      {
+        "type": "action",
+        "description": "Click on the first user entry in the leaderboard list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"ELO\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Leaderboard handles empty state gracefully",
+    "description": "Verifies the leaderboard page displays a clear empty state message when no rankings are available.",
+    "category": "Leaderboard",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Leaderboard\" in the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/leaderboard\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No users\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"leaderboard\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Leaderboard page loads without requiring manual refresh",
+    "description": "Verifies the leaderboard automatically renders content after navigation (no stuck loading state).",
+    "category": "Leaderboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Leaderboard\" in the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/leaderboard\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Leaderboard\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"ELO\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Coach can view assigned athletes and assign a custom program successfully",
+    "description": "Verifies that an authenticated coach can access the Coach Panel, select an athlete, assign a program, and see a success confirmation.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Assigned Athletes\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one athlete entry is visible in the athletes list"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Coach selects an athlete and opens the assign program dialog",
+    "description": "Verifies that a coach can select an athlete from the list and reach the program assignment UI.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first athlete in the assigned athletes list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Athlete details panel\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Assign Program\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Coach assigns a custom program and sees confirmation",
+    "description": "Verifies that the assignment flow completes and displays a confirmation message after submission.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first athlete in the assigned athletes list"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Assign Program\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Assign Program\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Coach completes program fields and submits successfully from the assign dialog",
+    "description": "Verifies that filling required fields in the assign program dialog enables a successful submission and shows success feedback.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first athlete in the assigned athletes list"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Assign Program\" button"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Strength Block A\" into the \"Program Name\" field"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Non-coach user is denied access to Coach Panel (access denied message or safe redirect)",
+    "description": "Verifies that a logged-in non-coach cannot access the Coach Panel and sees an access denied message or is redirected to a safe page.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"noncoach_user@example.invalid\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"WrongPassword123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Invalid login\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /coach"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Access denied\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Assign program dialog shows validation errors when submitted with missing required fields",
+    "description": "Verifies that submitting the program assignment form with missing required fields displays validation errors.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first athlete in the assigned athletes list"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Assign Program\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Submit\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "After validation errors, coach completes required fields and sees success confirmation",
+    "description": "Verifies that validation errors can be resolved by completing required fields and that a successful submission shows confirmation.",
+    "category": "Coach Panel",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Coach\" link or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first athlete in the assigned athletes list"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Assign Program\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Submit\" button"
+      }
+    ]
+  }
+]
