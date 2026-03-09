@@ -3,6 +3,7 @@ import { supabase } from '../core/supabaseClient';
 
 const Auth = ({ onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState(''); // New state for username
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,9 +16,20 @@ const Auth = ({ onLoginSuccess }) => {
 
     try {
       if (isLogin) {
-        // Sign In
+        // Sign In via Username
+        // 1. Get the email associated with the username using our secure RPC
+        const { data: foundEmail, error: rpcError } = await supabase.rpc('get_email_by_username', {
+          p_username: username
+        });
+        
+        if (rpcError) throw rpcError;
+        if (!foundEmail) {
+           throw new Error('Kullanıcı bulunamadı.'); // User not found
+        }
+
+        // 2. Sign in with the retrieved email
         const { data, error } = await supabase.auth.signInWithPassword({
-          email,
+          email: foundEmail,
           password,
         });
         if (error) throw error;
@@ -29,6 +41,11 @@ const Auth = ({ onLoginSuccess }) => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              username: username // Save custom username to user metadata
+            }
+          }
         });
         if (error) throw error;
         
@@ -63,6 +80,40 @@ const Auth = ({ onLoginSuccess }) => {
         </h1>
 
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {!isLogin && (
+            <div>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontSize: '12px', 
+                fontWeight: 700, 
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase' 
+              }}>
+                E-posta
+              </label>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ornek@email.com"
+                required={!isLogin}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  backgroundColor: '#000000',
+                  border: '1px solid #2C2C2E',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  fontSize: '15px',
+                  fontFamily: 'var(--font-gaming)',
+                  boxSizing: 'border-box',
+                  outline: 'none'
+                }}
+              />
+            </div>
+          )}
+
           <div>
             <label style={{ 
               display: 'block', 
@@ -72,13 +123,13 @@ const Auth = ({ onLoginSuccess }) => {
               color: 'var(--text-muted)',
               textTransform: 'uppercase' 
             }}>
-              E-posta
+              Kullanıcı Adı
             </label>
             <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ornek@email.com"
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Oyuncu adı (örn: ProLifer42)"
               required
               style={{
                 width: '100%',
