@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../core/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useUserData } from '../hooks/useUserData';
@@ -6,20 +7,73 @@ import WorkoutTracker from './WorkoutTracker';
 import WorkoutSummary from './WorkoutSummary';
 import ProgramWizard from './ProgramWizard';
 
-const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
-  const { session, user } = useAuth();
+const WorkoutLogger = () => {
+  const { session, user, refreshProfile } = useAuth();
   const { addWorkoutOptimistic } = useUserData();
+  const navigate = useNavigate();
   
+  const [activeProgram, setActiveProgram] = useState(null);
+  const [programLoading, setProgramLoading] = useState(true);
   const [activeDay, setActiveDay] = useState(null);
   const [completedWorkout, setCompletedWorkout] = useState(null);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [exercisesCatalog, setExercisesCatalog] = useState([]);
 
+  // Load exercises catalog
   useEffect(() => {
     supabase.from('exercises').select('*').then(({data}) => {
       if (data) setExercisesCatalog(data);
     });
   }, []);
+
+  // Load the user's active program from Supabase
+  useEffect(() => {
+    if (!session?.user) {
+      setProgramLoading(false);
+      return;
+    }
+
+    const fetchProgram = async () => {
+      const { data } = await supabase
+        .from('user_programs')
+        .select('id, program_data')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (data?.program_data) {
+        setActiveProgram(data.program_data);
+      }
+      setProgramLoading(false);
+    };
+    
+    fetchProgram();
+  }, [session?.user?.id]);
+
+  // Save a new program to Supabase
+  const handleSaveProgram = async (prog) => {
+    if (!session?.user) return;
+
+    // Deactivate all existing programs
+    await supabase
+      .from('user_programs')
+      .update({ is_active: false })
+      .eq('user_id', session.user.id);
+
+    // Insert new active program
+    await supabase
+      .from('user_programs')
+      .insert({
+        user_id: session.user.id,
+        program_data: prog,
+        is_active: true
+      });
+    
+    setActiveProgram(prog);
+    setIsWizardOpen(false);
+  };
 
   const handleLogWorkout = async (newLog) => {
     if (!session?.user) return;
@@ -31,7 +85,7 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
       day_name: newLog.dayName,
       total_volume: newLog.analysis.totalVolume || 0,
       elo_gained: Math.floor((newLog.analysis.totalVolume || 0) / 100)
-    }).select().single();
+    }).select().maybeSingle();
 
     if (workoutError) {
       console.error(workoutError);
@@ -48,7 +102,8 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
             exercise_id: matchedEx ? matchedEx.id : null,
             set_number: set.set,
             weight_kg: parseFloat(set.kg),
-            reps: parseInt(set.reps)
+            reps: parseInt(set.reps),
+            rpe: parseFloat(set.rpe) || null
          });
       });
     });
@@ -62,7 +117,7 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
     const uiLog = {
       ...newLog,
       id: insertedWorkout.id,
-      safeCompareString: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+      safeCompareString: `${today.getFullYear()}-${String(today.getMonth()).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`,
       dateString: today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
     };
     
@@ -70,14 +125,25 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
         addWorkoutOptimistic(uiLog);
     }
 
-    // 4. Update ELO (The real ELO is updated via AuthContext refetch optionally, but we update the DB here)
+    // 4. Update ELO
     if (user) {
       const newElo = user.elo_score + insertedWorkout.elo_gained;
       await supabase.from('profiles').update({ elo_score: newElo }).eq('id', session.user.id);
-      // Optional: trigger AuthContext refetch if we added a method, but for now it'll sync on reload
+      await refreshProfile(); // Immediately sync the updated ELO to the UI
     }
   };
 
+  if (programLoading) {
+    return (
+      <div style={{ padding: '1rem 0' }}>
+        <div className="skeleton skeleton-text-lg" style={{ width: '60%' }}></div>
+        <div className="skeleton skeleton-text" style={{ width: '40%', marginBottom: '1.5rem' }}></div>
+        <div className="skeleton skeleton-block"></div>
+        <div className="skeleton skeleton-block"></div>
+        <div className="skeleton skeleton-block"></div>
+      </div>
+    );
+  }
 
   if (!activeProgram) {
     return (
@@ -89,7 +155,7 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
           <div className="modal-overlay" onClick={(e) => { if(e.target === e.currentTarget) setIsWizardOpen(false); }}>
             <div className="modal-content">
               <ProgramWizard 
-                onSaveProgram={(prog) => { onUpdateProgram(prog); setIsWizardOpen(false); }} 
+                onSaveProgram={handleSaveProgram} 
                 onClose={() => setIsWizardOpen(false)}
               />
             </div>
@@ -123,13 +189,21 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
   }
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+    <div className="page-enter">
       <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{activeProgram.programName}</h2>
           <p style={{ color: 'var(--text-muted)' }}>Bugün hangi günü uygulayacaksın?</p>
         </div>
-        <button className="magic-wand-btn" onClick={() => setIsWizardOpen(true)}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            className="magic-wand-btn" 
+            onClick={() => navigate('/program')}
+            style={{ fontSize: '0.8rem' }}
+          >
+            📋 Genel Bakış
+          </button>
+          <button className="magic-wand-btn" onClick={() => setIsWizardOpen(true)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 4V2"/>
             <path d="M15 16v-2"/>
@@ -143,7 +217,8 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
             <path d="M12.2 12.2l4-4"/>
           </svg>
           Programı Güncelle
-        </button>
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -151,12 +226,13 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
           <button 
             key={idx}
             onClick={() => setActiveDay(dayPlan)}
-            className="card"
+            className="card card-glow"
             disabled={!dayPlan.exercises || dayPlan.exercises.length === 0}
             style={{ 
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-              padding: '1.5rem', cursor: (!dayPlan.exercises || dayPlan.exercises.length === 0) ? 'not-allowed' : 'pointer', 
-              textAlign: 'left', border: 'none', background: 'rgba(255,255,255,0.03)',
+              padding: '1.25rem 1.5rem', cursor: (!dayPlan.exercises || dayPlan.exercises.length === 0) ? 'not-allowed' : 'pointer', 
+              textAlign: 'left', background: 'rgba(255,255,255,0.03)',
+              borderLeft: `3px solid hsl(${(idx * 60) % 360}, 60%, 55%)`,
               opacity: (!dayPlan.exercises || dayPlan.exercises.length === 0) ? 0.5 : 1
             }}
           >
@@ -175,7 +251,7 @@ const WorkoutLogger = ({ activeProgram, onUpdateProgram }) => {
         <div className="modal-overlay" onClick={(e) => { if(e.target === e.currentTarget) setIsWizardOpen(false); }}>
           <div className="modal-content">
             <ProgramWizard 
-              onSaveProgram={(prog) => { onUpdateProgram(prog); setIsWizardOpen(false); }} 
+              onSaveProgram={handleSaveProgram} 
               onClose={() => setIsWizardOpen(false)}
             />
           </div>

@@ -1,12 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../core/supabaseClient';
 
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState('rekabetci');
+  const [leaderboardData, setLeaderboardData] = useState({ rekabetci: [], genel: [] });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const leaderboardData = {
-    rekabetci: [],
-    genel: []
-  };
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      setIsLoading(true);
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, elo_score, rank_title, account_type')
+        .order('elo_score', { ascending: false })
+        .limit(50);
+      
+      if (error) {
+        console.error('Leaderboard fetch error:', error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (data) {
+        const genel = data.map((user, idx) => ({
+          rank: idx + 1,
+          username: user.username,
+          elo: user.elo_score,
+          title: user.rank_title,
+          accountType: user.account_type
+        }));
+
+        const rekabetci = data
+          .filter(u => u.account_type === 'Rekabetçi')
+          .map((user, idx) => ({
+            rank: idx + 1,
+            username: user.username,
+            elo: user.elo_score,
+            title: user.rank_title,
+            accountType: user.account_type
+          }));
+
+        setLeaderboardData({ genel, rekabetci });
+      }
+      setIsLoading(false);
+    };
+
+    fetchLeaderboard();
+  }, []);
 
   const getRankStyle = (rank) => {
     if (rank === 1) return { color: 'var(--gold)', fontSize: '1.25rem' };
@@ -33,6 +74,14 @@ const Leaderboard = () => {
   };
 
   const renderList = (data) => {
+    if (isLoading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>
+          Yükleniyor...
+        </div>
+      );
+    }
+
     if (data.length === 0) {
       return (
         <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>

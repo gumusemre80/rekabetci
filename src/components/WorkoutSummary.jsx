@@ -1,14 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { analyzeWorkout } from '../core/analysisEngine';
+import { checkBadges } from '../core/badgeEngine';
+import { supabase } from '../core/supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
 const WorkoutSummary = ({ workoutData, onFinish }) => {
+  const { session } = useAuth();
   const [analysis, setAnalysis] = useState(null);
+  const [newBadges, setNewBadges] = useState([]);
 
   useEffect(() => {
     // Run the engine precisely once when component mounts
     if (workoutData?.exercisesLogged) {
        const results = analyzeWorkout(workoutData.exercisesLogged);
        setAnalysis(results);
+
+       // Check for new badges
+       if (session?.user?.id) {
+         checkBadges(session.user.id, supabase, results.totalVolume)
+           .then(({ newBadges: earned }) => setNewBadges(earned))
+           .catch(console.error);
+       }
     }
   }, [workoutData]);
 
@@ -30,6 +42,36 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+        {/* ═══ NEW BADGES CELEBRATION ═══ */}
+        {newBadges.length > 0 && (
+          <div className="card" style={{
+            borderLeft: '4px solid var(--gold)',
+            backgroundColor: 'rgba(245, 215, 110, 0.05)',
+            animation: 'fadeIn 0.6s ease-out'
+          }}>
+            <h3 style={{ color: 'var(--gold)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🎖️ Yeni Rozetler Kazanıldı!
+            </h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              {newBadges.map((badge, i) => (
+                <div key={badge.key} style={{
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(245, 215, 110, 0.08)',
+                  border: '1px solid rgba(245, 215, 110, 0.15)',
+                  animation: `fadeIn 0.4s ease-out ${i * 0.15}s both`
+                }}>
+                  <span style={{ fontSize: '1.5rem' }}>{badge.emoji}</span>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>{badge.name}</div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{badge.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Praise / Positive Reinforcement Box */}
         {analysis.praises.length > 0 && (

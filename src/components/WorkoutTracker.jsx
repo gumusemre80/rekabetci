@@ -1,4 +1,14 @@
 import React, { useState } from 'react';
+import RestTimer from './RestTimer';
+
+const RPE_OPTIONS = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+const getRpeColor = (rpe) => {
+  if (rpe <= 7) return 'var(--color-success)';
+  if (rpe <= 8) return 'var(--gold)';
+  if (rpe <= 9) return '#ff8800';
+  return 'var(--color-danger)';
+};
+const getRIR = (rpe) => Math.max(0, 10 - rpe);
 
 const BASE_ALTERNATIVES = {
   'Barbell Back Squat': ['Leg Press', 'Dumbbell Goblet Squat'],
@@ -55,11 +65,16 @@ Object.keys(EXERCISE_ALTERNATIVES).forEach(key => {
 const WorkoutTracker = ({ routineDay, onCompleteWorkout, onCancelWorkout }) => {
   // Deep clone routine to avoid mutating source prop
   const [exercises, setExercises] = useState(
-    routineDay.exercises.map(ex => ({ ...ex, loggedSets: [] }))
+    routineDay.exercises.map(ex => {
+      const targetRpeMatch = ex.rpe?.match(/[\d.]+/);
+      const defaultRpe = targetRpeMatch ? parseFloat(targetRpeMatch[0]) : 8;
+      return { ...ex, loggedSets: [], defaultRpe };
+    })
   );
   
   const [currentInputs, setCurrentInputs] = useState({});
   const [swappingExId, setSwappingExId] = useState(null);
+  const [restTimerExIdx, setRestTimerExIdx] = useState(null);
 
   const handleInputChange = (exIndex, field, value) => {
     setCurrentInputs({
@@ -74,10 +89,7 @@ const WorkoutTracker = ({ routineDay, onCompleteWorkout, onCancelWorkout }) => {
   const logSet = (exIndex) => {
     const kg = currentInputs[exIndex]?.kg || '';
     const reps = currentInputs[exIndex]?.reps || '';
-    
-    // In a real app we would log RPE optionally, default to target
-    const targetRpeMatch = exercises[exIndex].rpe.match(/\d+/);
-    const rpe = targetRpeMatch ? targetRpeMatch[0] : '8';
+    const rpe = currentInputs[exIndex]?.rpe ?? exercises[exIndex].defaultRpe;
 
     if (!kg || !reps) {
       alert("Lütfen ağırlık ve tekrar verilerini girin.");
@@ -88,9 +100,12 @@ const WorkoutTracker = ({ routineDay, onCompleteWorkout, onCancelWorkout }) => {
     updatedExercises[exIndex].loggedSets.push({ set: updatedExercises[exIndex].loggedSets.length + 1, kg, reps, rpe });
     setExercises(updatedExercises);
     
-    // Clear inputs for this exercise
+    // Clear kg/reps but keep RPE selection for next set
     handleInputChange(exIndex, 'kg', '');
     handleInputChange(exIndex, 'reps', '');
+
+    // Start rest timer for this exercise
+    setRestTimerExIdx(exIndex);
   };
 
   const removeSet = (exIndex, setIndex) => {
@@ -211,38 +226,87 @@ const WorkoutTracker = ({ routineDay, onCompleteWorkout, onCancelWorkout }) => {
               <div style={{ padding: '1rem 1.25rem 0' }}>
                 {ex.loggedSets.map((set, sIdx) => (
                   <div key={sIdx} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px dashed rgba(255,255,255,0.1)' }}>
-                    <div style={{ width: '30px', fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.9rem' }}>{set.set}</div>
+                    <div style={{ width: '26px', fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.9rem' }}>{set.set}</div>
                     <div style={{ flex: 1, fontWeight: 700, fontSize: '1.1rem' }}>{set.kg} <span style={{ fontSize:'0.8rem', color:'var(--text-muted)', fontWeight:400 }}>kg</span></div>
                     <div style={{ flex: 1, fontWeight: 700, fontSize: '1.1rem' }}>{set.reps} <span style={{ fontSize:'0.8rem', color:'var(--text-muted)', fontWeight:400 }}>tekrar</span></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '8px' }}>
+                      <span style={{
+                        fontSize: '0.7rem', fontWeight: 700, padding: '2px 6px',
+                        borderRadius: '4px', color: getRpeColor(set.rpe),
+                        background: `${getRpeColor(set.rpe)}15`
+                      }}>
+                        RPE {set.rpe}
+                      </span>
+                      <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>
+                        {getRIR(set.rpe)} RIR
+                      </span>
+                    </div>
                     <button onClick={() => removeSet(idx, sIdx)} style={{ background: 'none', border: 'none', color: 'var(--color-danger)', fontSize: '1.2rem', cursor: 'pointer', opacity: 0.7 }}>×</button>
                   </div>
                 ))}
               </div>
 
+              {/* Rest Timer */}
+              {restTimerExIdx === idx && (
+                <RestTimer
+                  isActive={true}
+                  onComplete={() => setRestTimerExIdx(null)}
+                  onSkip={() => setRestTimerExIdx(null)}
+                />
+              )}
+
               {/* Input Area */}
               {!isComplete && (
-                <div style={{ padding: '1rem 1.25rem', display: 'flex', gap: '0.75rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <input 
-                      type="number" 
-                      placeholder="Ağırlık (kg)" 
-                      value={currentInputs[idx]?.kg || ''}
-                      onChange={(e) => handleInputChange(idx, 'kg', e.target.value)}
-                      style={{ padding: '0.75rem', fontSize: '1rem' }}
-                    />
+                <div style={{ padding: '1rem 1.25rem' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '10px' }}>
+                    <div style={{ flex: 1 }}>
+                      <input 
+                        type="number" 
+                        placeholder="Ağırlık (kg)" 
+                        value={currentInputs[idx]?.kg || ''}
+                        onChange={(e) => handleInputChange(idx, 'kg', e.target.value)}
+                        style={{ padding: '0.75rem', fontSize: '1rem' }}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <input 
+                        type="number" 
+                        placeholder="Tekrar"
+                        value={currentInputs[idx]?.reps || ''}
+                        onChange={(e) => handleInputChange(idx, 'reps', e.target.value)}
+                        style={{ padding: '0.75rem', fontSize: '1rem' }}
+                      />
+                    </div>
+                    <button onClick={() => logSet(idx)} className="btn-primary" style={{ padding: '0 1.25rem', width: 'auto' }}>
+                      +
+                    </button>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <input 
-                      type="number" 
-                      placeholder="Tekrar"
-                      value={currentInputs[idx]?.reps || ''}
-                      onChange={(e) => handleInputChange(idx, 'reps', e.target.value)}
-                      style={{ padding: '0.75rem', fontSize: '1rem' }}
-                    />
+                  {/* RPE Selector */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginRight: '4px', whiteSpace: 'nowrap' }}>RPE</span>
+                    {RPE_OPTIONS.map(rpeVal => {
+                      const selected = (currentInputs[idx]?.rpe ?? ex.defaultRpe) === rpeVal;
+                      return (
+                        <button
+                          key={rpeVal}
+                          onClick={() => handleInputChange(idx, 'rpe', rpeVal)}
+                          style={{
+                            flex: 1, padding: '6px 0', border: 'none',
+                            borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700,
+                            cursor: 'pointer', fontFamily: 'var(--font-gaming)',
+                            transition: 'all 0.15s ease',
+                            background: selected ? getRpeColor(rpeVal) : 'rgba(255,255,255,0.04)',
+                            color: selected ? '#000' : 'var(--text-muted)'
+                          }}
+                        >
+                          {rpeVal % 1 === 0 ? rpeVal : rpeVal.toFixed(1)}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <button onClick={() => logSet(idx)} className="btn-primary" style={{ padding: '0 1.25rem', width: 'auto' }}>
-                    +
-                  </button>
+                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textAlign: 'right', marginTop: '4px' }}>
+                    {getRIR(currentInputs[idx]?.rpe ?? ex.defaultRpe)} tekrar daha yapılabilir (RIR)
+                  </div>
                 </div>
               )}
               

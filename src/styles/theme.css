@@ -276,3 +276,203 @@ nav {
 .magic-wand-btn:active {
   transform: scale(0.95);
 }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Auth Page Styles */
+.auth-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #000000;
+  border: 1px solid #2C2C2E;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 15px;
+  font-family: var(--font-gaming);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.auth-input:focus {
+  border-color: var(--text-muted);
+  background-color: rgba(255,255,255,0.08);
+}
+
+.auth-submit-btn {
+  margin-top: 1.5rem;
+  background-color: #39FF14;
+  color: #000000;
+  border: none;
+  border-radius: 0px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: var(--font-gaming);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  width: 100%;
+}
+
+.auth-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.auth-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.auth-toggle-btn:hover {
+  color: var(--text-main);
+}
+
+/* NavLink active state override for router */
+a.nav-btn {
+  text-decoration: none;
+}
+
+/* ——— PREMIUM UI ENHANCEMENTS ——— */
+
+/* Page Entry Animation */
+.page-enter {
+  animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Shimmer Effect (for rank card, stat highlights) */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-border {
+  position: relative;
+}
+
+.shimmer-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Skeleton Loader */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-text-lg {
+  height: 24px;
+  margin-bottom: 12px;
+}
+
+.skeleton-block {
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+/* Stat Display Utilities */
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+/* Card Hover Glow */
+.card-glow {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-glow:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Nav Active — color change only, no indicator */
+
+/* Rank Ring Colors */
+.rank-ring-bronze { box-shadow: 0 0 0 3px var(--bronze); }
+.rank-ring-silver { box-shadow: 0 0 0 3px var(--silver); }
+.rank-ring-gold { box-shadow: 0 0 0 3px var(--gold); }
+.rank-ring-default { box-shadow: 0 0 0 3px var(--text-muted); }
+
+/* Accent Border Left (for workout day cards) */
+.accent-left {
+  border-left: 3px solid var(--accent);
+}
+
+/* ——— STATS PAGE ENHANCEMENTS ——— */
+
+/* Period Comparison Banner */
+.stats-comparison {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-color);
+}
+
+/* Gold PR Card (rank 1) */
+.pr-card-gold {
+  border-color: rgba(245, 215, 110, 0.25) !important;
+  box-shadow: 0 0 12px rgba(245, 215, 110, 0.06);
+}
+
+/* Pulse Animation (for chart peak bar) */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}

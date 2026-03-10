@@ -59,7 +59,7 @@ export const useUserData = () => {
                 programName: w.program_name,
                 dayName: w.day_name,
                 dateString: d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
-                safeCompareString: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+                safeCompareString: `${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,
                 analysis: { totalVolume: w.total_volume },
                 exercisesLogged: Object.values(exMap)
             };
@@ -83,7 +83,7 @@ export const useUserData = () => {
        fetchAllData();
     }
 
-  }, [session, authUser]); // Refetch if session or base profile updates
+  }, [session?.user?.id, authUser?.elo_score]); // Refetch only when user ID or ELO changes
 
   // Exposed for optimistic updates from components like WorkoutLogger
   const addWorkoutOptimistic = (newWorkout) => {

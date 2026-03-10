@@ -1,15 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../core/supabaseClient';
 
 const CoachPanel = () => {
   const [submissions, setSubmissions] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [ratings, setRatings] = useState({});
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('video_submissions')
+        .select('*, profiles(username), exercises(name_tr)')
+        .eq('status', 'Pending')
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        console.error('CoachPanel fetch error:', error);
+      } else {
+        const formatted = (data || []).map(sub => ({
+          id: sub.id,
+          username: sub.profiles?.username || 'Bilinmeyen',
+          exercise: sub.exercises?.name_tr || 'Bilinmeyen Hareket',
+          weight: sub.weight_kg,
+          reps: sub.reps,
+          videoUrl: sub.video_url,
+          userId: sub.user_id
+        }));
+        setSubmissions(formatted);
+      }
+      setIsLoading(false);
+    };
+
+    fetchPending();
+  }, []);
 
   const handleRatingChange = (id, rating) => {
     setRatings({ ...ratings, [id]: rating });
   };
 
-  const handleApprove = (id, weight, reps) => {
+  const handleApprove = async (id, weight, reps, userId) => {
     const coachRating = ratings[id];
     if (!coachRating || coachRating < 1 || coachRating > 10) {
       alert("Lütfen 1-10 arası bir teknik puanı girin.");
@@ -19,12 +49,51 @@ const CoachPanel = () => {
     // Formula: eloGained = weight * reps * 0.033 * coach_rating
     const eloGained = Math.round(weight * reps * 0.033 * coachRating);
     
-    alert(`Video Onaylandı. Kullanıcıya ${eloGained} ELO eklendi.`);
+    // Update submission status in Supabase
+    const { error: updateError } = await supabase
+      .from('video_submissions')
+      .update({ 
+        status: 'Approved', 
+        coach_rating: coachRating,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', id);
     
+    if (updateError) {
+      alert('Hata: ' + updateError.message);
+      return;
+    }
+
+    // Update user's ELO score
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('elo_score')
+      .eq('id', userId)
+      .maybeSingle();
+    
+    if (profile) {
+      const newElo = profile.elo_score + eloGained;
+      await supabase.from('profiles').update({ elo_score: newElo }).eq('id', userId);
+    }
+
+    alert(`Video Onaylandı. Kullanıcıya ${eloGained} ELO eklendi.`);
     setSubmissions(submissions.filter(sub => sub.id !== id));
   };
 
-  const handleReject = (id) => {
+  const handleReject = async (id) => {
+    const { error } = await supabase
+      .from('video_submissions')
+      .update({ 
+        status: 'Rejected',
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', id);
+    
+    if (error) {
+      alert('Hata: ' + error.message);
+      return;
+    }
+
     alert("Video reddedildi. Form yönergelere uymuyor.");
     setSubmissions(submissions.filter(sub => sub.id !== id));
   };
@@ -40,7 +109,11 @@ const CoachPanel = () => {
         </div>
       </div>
 
-      {submissions.length === 0 ? (
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>
+          Yükleniyor...
+        </div>
+      ) : submissions.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
           İncelenecek yeni video bulunmuyor.
@@ -100,7 +173,7 @@ const CoachPanel = () => {
                 <button 
                   className="btn-primary" 
                   style={{ flex: 2, backgroundColor: 'var(--color-success)', color: '#000' }}
-                  onClick={() => handleApprove(sub.id, sub.weight, sub.reps)}
+                  onClick={() => handleApprove(sub.id, sub.weight, sub.reps, sub.userId)}
                 >
                   Onayla
                 </button>

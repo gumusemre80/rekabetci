@@ -97,7 +97,7 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
               const formattedBlockDate = dateObj.toLocaleDateString('tr-TR', options);
               
               // Safe universal string comparison (YYYY-MM-DD)
-              const safeCompareString = `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}`;
+              const safeCompareString = `${dateObj.getFullYear()}-${String(dateObj.getMonth()).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
               
               const today = new Date();
               today.setHours(0,0,0,0);
@@ -130,7 +130,7 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
 
               return (
                 <button
-                  key={i}
+                  key={`day-${i}`}
                   title={formattedBlockDate}
                   onClick={() => setSelectedDay(isSelected ? null : { 
                      dateString: formattedBlockDate, 

@@ -65,7 +65,7 @@ function processWorkout(user, workoutDetails) {
     throw new Error("Geçerli bir hesap türü bulunamadı.");
 }
 
-module.exports = {
+export {
     BASE_ELO,
     calculateNewElo,
     processWorkout

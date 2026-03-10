@@ -8,28 +8,61 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // We only fetch the basic profile to provide ELO and Rank globally.
-  // We leave the heavy workout fetching to the useUserData hook.
   const fetchBasicProfile = async (userId, email) => {
-    const { data: profile } = await supabase.from('profiles').select('id, username, account_type, elo_score, rank_title, is_verified').eq('id', userId).single();
+    // Try to fetch existing profile
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id, username, account_type, elo_score, rank_title, is_verified, role')
+      .eq('id', userId)
+      .maybeSingle();
+    
+    if (error) {
+      console.error('[AuthContext] Profile fetch error:', error);
+    }
+
     if (profile) {
       setUser({ ...profile, email });
     } else {
-      // Fallback if profile not created yet
-      setUser({ 
-        username: email.split('@')[0], 
-        account_type: 'Standart', 
-        elo_score: 0, 
-        rank_title: 'Başlangıç', 
-        is_verified: false,
-        email 
-      });
+      // Profile doesn't exist — create it now
+      console.log('[AuthContext] No profile found, creating one for', userId);
+      const defaultUsername = email.split('@')[0];
+      
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userId,
+          username: defaultUsername,
+          account_type: 'Standart',
+          elo_score: 0,
+          rank_title: 'Başlangıç',
+          is_verified: false,
+          role: 'user'
+        }, { onConflict: 'id' })
+        .select('id, username, account_type, elo_score, rank_title, is_verified, role')
+        .maybeSingle();
+      
+      if (insertError) {
+        console.error('[AuthContext] Profile upsert error:', insertError);
+        // Use fallback
+        setUser({ id: userId, username: defaultUsername, account_type: 'Standart', elo_score: 0, rank_title: 'Başlangıç', is_verified: false, role: 'user', email });
+      } else if (newProfile) {
+        setUser({ ...newProfile, email });
+      } else {
+        setUser({ id: userId, username: defaultUsername, account_type: 'Standart', elo_score: 0, rank_title: 'Başlangıç', is_verified: false, role: 'user', email });
+      }
     }
     setIsLoading(false);
   };
 
+  // Allow components to trigger a profile re-fetch
+  const refreshProfile = async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (currentSession?.user) {
+      await fetchBasicProfile(currentSession.user.id, currentSession.user.email);
+    }
+  };
+
   useEffect(() => {
-    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
@@ -39,7 +72,6 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    // Listen to changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
@@ -59,7 +91,9 @@ export const AuthProvider = ({ children }) => {
     user,
     eloScore: user?.elo_score || 0,
     rankTitle: user?.rank_title || 'Başlangıç',
-    isLoading
+    isModerator: user?.role === 'moderator',
+    isLoading,
+    refreshProfile
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
