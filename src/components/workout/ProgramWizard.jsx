@@ -193,7 +193,7 @@ const ProgramWizard = ({ onSaveProgram, onClose }) => {
       }}
     >
       <span style={{ fontSize: '1.1rem', fontWeight: formData[field] === label ? 700 : 500 }}>{label}</span>
-      {desc && <span style={{ fontSize: '0.85rem', color: formData[field] === label ? 'rgba(0,229,255,0.7)' : 'var(--text-muted)', marginTop: '4px' }}>{desc}</span>}
+      {desc && <span style={{ fontSize: '0.85rem', color: formData[field] === label ? 'var(--brand-cyan)' : 'var(--text-muted)', marginTop: '4px' }}>{desc}</span>}
     </button>
   );
 
@@ -273,7 +273,7 @@ const ProgramWizard = ({ onSaveProgram, onClose }) => {
                       flex: '1 1 calc(50% - 0.5rem)',
                       padding: '1.25rem 0',
                       borderRadius: 'var(--radius-sm)',
-                      border: `1px solid ${formData.frekans === gun ? 'var(--accent)' : 'rgba(255,255,255,0.1)'}`,
+                      border: `1px solid ${formData.frekans === gun ? 'var(--accent)' : 'var(--border-color)'}`,
                       backgroundColor: formData.frekans === gun ? 'var(--accent)' : 'transparent',
                       color: formData.frekans === gun ? 'var(--bg-dark)' : 'var(--text-main)',
                       fontSize: '1.25rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s ease',
@@ -308,7 +308,7 @@ const ProgramWizard = ({ onSaveProgram, onClose }) => {
             <div style={{ animation: 'fadeIn 0.3s ease', textAlign: 'center' }}>
               <div style={{ 
                 width: '64px', height: '64px', borderRadius: '50%', 
-                backgroundColor: 'rgba(0,229,255,0.1)', display: 'flex', 
+                backgroundColor: 'var(--brand-cyan-bg)', display: 'flex', 
                 alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' 
               }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -349,7 +349,7 @@ const ProgramWizard = ({ onSaveProgram, onClose }) => {
               </div>
             </div>
 
-            <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'rgba(0,229,255,0.1)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--accent)' }}>
+            <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--brand-cyan-bg)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--accent)' }}>
               <div style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px', color: 'var(--accent)' }}>Sürdürülebilir İlerleme Planı</div>
               <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>{result.overloadRule}</p>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 
 const Settings = () => {
   const { user, session, refreshProfile } = useAuth();

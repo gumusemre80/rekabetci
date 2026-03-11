@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../core/supabaseClient';
+import { supabase } from '../../core/supabaseClient';
 
 const CoachPanel = () => {
   const [submissions, setSubmissions] = useState([]);

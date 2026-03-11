@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useUserData } from '../hooks/useUserData';
-import { supabase } from '../core/supabaseClient';
-import ActivityHeatmap from './ActivityHeatmap';
-import RankCard from './RankCard';
+import { useAuth } from '../../context/AuthContext';
+import { useUserData } from '../../hooks/useUserData';
+import { supabase } from '../../core/supabaseClient';
+import ActivityHeatmap from '../stats/ActivityHeatmap';
+import RankCard from '../gamification/RankCard';
 
 const Profile = () => {
   const { user, session } = useAuth();

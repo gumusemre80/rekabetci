@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 
 const Auth = () => {
   const { session } = useAuth();
@@ -77,7 +77,7 @@ const Auth = () => {
   if (session) return null;
 
   return (
-    <div className="app-container" style={{ justifyContent: 'center' }}>
+    <div className="app-container bg-grid-pattern" style={{ justifyContent: 'center' }}>
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 

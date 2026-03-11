@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../core/supabaseClient';
+import { supabase } from '../../core/supabaseClient';
+import EmptyState from '../ui/EmptyState';
 
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState('rekabetci');
@@ -84,10 +85,11 @@ const Leaderboard = () => {
 
     if (data.length === 0) {
       return (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏆</div>
-          Henüz sıralamaya giren kimse yok.
-        </div>
+        <EmptyState 
+          icon="🏆"
+          title="Henüz Sıralama Yok"
+          message="Bu kategoride sıralamaya giren kimse bulunamadı. İlk sen ol!"
+        />
       );
     }
     return (
@@ -96,8 +98,8 @@ const Leaderboard = () => {
           const rankData = getRankData(user.title);
           
           return (
-            <div key={user.rank} className="card" style={{ display: 'flex', alignItems: 'center', padding: '1rem', margin: 0 }}>
-              <div style={{ width: '40px', fontWeight: 700, ...getRankStyle(user.rank) }}>
+            <div key={user.rank} className={`card ${user.rank === 1 ? 'radial-spotlight radial-spotlight-gold' : ''}`} style={{ display: 'flex', alignItems: 'center', padding: '1rem', margin: 0 }}>
+              <div className="font-mono" style={{ width: '40px', fontWeight: 700, ...getRankStyle(user.rank), zIndex: 2 }}>
                 #{user.rank}
               </div>
               
@@ -116,7 +118,7 @@ const Leaderboard = () => {
               </div>
               
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>
+                <div className="font-mono" style={{ fontSize: '1.1rem', fontWeight: 700 }}>
                   {user.elo}
                 </div>
               </div>

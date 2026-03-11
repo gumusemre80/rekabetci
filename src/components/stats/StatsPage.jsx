@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
+import EmptyState from '../ui/EmptyState';
 
 const PERIODS = [
   { key: 'weekly', label: 'Haftalık', days: 7 },
@@ -259,14 +260,14 @@ const StatsPage = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ margin: 0, fontSize: '1.5rem' }}>İstatistikler</h2>
         <button
+          className="btn-back"
           onClick={() => navigate('/')}
-          style={{
-            background: 'transparent', border: '1px solid var(--border-color)',
-            color: 'var(--text-muted)', padding: '6px 12px', borderRadius: 'var(--radius-sm)',
-            fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-gaming)'
-          }}
         >
-          ← Profil
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Profil
         </button>
       </div>
 
@@ -294,10 +295,11 @@ const StatsPage = () => {
       </div>
 
       {!stats ? (
-        <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📊</div>
-          <p>Bu dönemde henüz antrenman verisi yok.</p>
-        </div>
+        <EmptyState 
+           icon="📊" 
+           title="Veri Yok" 
+           message="Bu dönemde henüz antrenman verisi bulunmuyor. Antrenman yaptıkça istatistiklerin burada belirecek." 
+        />
       ) : (
         <>
           {/* ═══ 1) Stat Cards Grid ═══ */}

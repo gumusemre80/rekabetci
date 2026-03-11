@@ -1,4 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
+
+const getRpeColor = (rpe) => {
+  if (!rpe) return 'var(--text-muted)';
+  if (rpe <= 7) return 'var(--color-success)';
+  if (rpe <= 8) return 'var(--gold)';
+  if (rpe <= 9) return '#ff8800';
+  return 'var(--color-danger)';
+};
+const getRIR = (rpe) => rpe ? Math.max(0, 10 - rpe) : null;
+
+const DayBlock = memo(({
+  dateObj,
+  formattedBlockDate,
+  safeCompareString,
+  matchingWorkoutIndex,
+  completedWorkouts,
+  isWorkoutScheduled,
+  isSelected,
+  onSelect
+}) => {
+  if (!dateObj) {
+    return <div style={{ aspectRatio: '1' }} />;
+  }
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const isPast = dateObj < today;
+  const isToday = dateObj.getTime() === today.getTime();
+  const hasWorkout = matchingWorkoutIndex !== -1;
+
+  let blockCategory = 'future'; // Pale gray
+  let bgColor = 'rgba(255,255,255,0.05)';
+  let borderColor = 'transparent';
+
+  if (hasWorkout) {
+     blockCategory = 'completed'; // Pastel Blue
+     bgColor = '#B3EBF2';
+  } else if (isPast && isWorkoutScheduled) {
+     blockCategory = 'missed'; // Pastel Red
+     bgColor = '#FF6961';
+  } else if (isPast || (isToday && !isWorkoutScheduled)) {
+     blockCategory = 'rest'; // Beyaz
+     bgColor = '#FFFFFF';
+  }
+
+  if (isSelected && blockCategory !== 'rest') {
+     borderColor = 'var(--accent)';
+  }
+
+  return (
+    <button
+      title={formattedBlockDate}
+      onClick={() => onSelect(isSelected ? null : { 
+         dateString: formattedBlockDate, 
+         category: blockCategory, 
+         workoutData: hasWorkout ? completedWorkouts[matchingWorkoutIndex] : null 
+      })}
+      style={{
+        aspectRatio: '1',
+        borderRadius: '4px',
+        border: `1px solid ${borderColor}`,
+        backgroundColor: bgColor,
+        opacity: isSelected ? 1 : 0.85,
+        cursor: 'pointer',
+        transition: 'all 0.1s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: blockCategory === 'completed' 
+               ? '#000' 
+               : (blockCategory === 'rest' || blockCategory === 'future') ? 'var(--text-muted)' : '#FFF',
+        fontSize: '0.7rem',
+        fontWeight: isToday ? 800 : 500
+      }}
+    >
+      {dateObj.getDate()}
+    </button>
+  );
+});
 
 const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -37,7 +116,7 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
   const { days: calendarDays, monthName } = getDaysInMonth(currentMonthOffset);
 
   // Heuristic rule for scheduled workout days based on program split Type
-  const isScheduled = (date) => {
+  const isScheduled = useCallback((date) => {
     if (!activeProgram) return false;
     const dayIndex = date.getDay(); // 0 is Sunday, 1 is Mon...
     
@@ -48,7 +127,7 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
       return [1, 2, 4, 5].includes(dayIndex);
     }
     return [1, 2, 3, 4, 5, 6].includes(dayIndex);
-  };
+  }, [activeProgram]);
 
   return (
     <div style={{ paddingBottom: '5rem' }}>
@@ -89,74 +168,28 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
             {calendarDays.map((dateObj, i) => {
-              if (!dateObj) {
-                return <div key={`empty-${i}`} style={{ aspectRatio: '1' }} />;
-              }
-              
+              if (!dateObj) return <div key={`empty-${i}`} style={{ aspectRatio: '1' }} />;
+
               const options = { day: 'numeric', month: 'long', year: 'numeric' };
               const formattedBlockDate = dateObj.toLocaleDateString('tr-TR', options);
-              
-              // Safe universal string comparison (YYYY-MM-DD)
               const safeCompareString = `${dateObj.getFullYear()}-${String(dateObj.getMonth()).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
               
-              const today = new Date();
-              today.setHours(0,0,0,0);
-              const isPast = dateObj < today;
-              const isToday = dateObj.getTime() === today.getTime();
-              
               const matchingWorkoutIndex = completedWorkouts.findIndex(w => w.safeCompareString === safeCompareString);
-              const hasWorkout = matchingWorkoutIndex !== -1;
               const isWorkoutScheduled = isScheduled(dateObj);
-              
-              let blockCategory = 'future'; // Pale gray
-              let bgColor = 'rgba(255,255,255,0.05)';
-              let borderColor = 'transparent';
-              
-              if (hasWorkout) {
-                 blockCategory = 'completed'; // Pastel Blue
-                 bgColor = '#B3EBF2';
-              } else if (isPast && isWorkoutScheduled) {
-                 blockCategory = 'missed'; // Pastel Red
-                 bgColor = '#FF6961';
-              } else if (isPast || (isToday && !isWorkoutScheduled)) {
-                 blockCategory = 'rest'; // Beyaz
-                 bgColor = '#FFFFFF';
-              }
-              
               const isSelected = selectedDay?.dateString === formattedBlockDate;
-              if (isSelected && blockCategory !== 'rest') {
-                 borderColor = 'var(--accent)';
-              }
 
               return (
-                <button
+                <DayBlock
                   key={`day-${i}`}
-                  title={formattedBlockDate}
-                  onClick={() => setSelectedDay(isSelected ? null : { 
-                     dateString: formattedBlockDate, 
-                     category: blockCategory, 
-                     workoutData: hasWorkout ? completedWorkouts[matchingWorkoutIndex] : null 
-                  })}
-                  style={{
-                    aspectRatio: '1',
-                    borderRadius: '4px',
-                    border: `1px solid ${borderColor}`,
-                    backgroundColor: bgColor,
-                    opacity: isSelected ? 1 : 0.85,
-                    cursor: 'pointer',
-                    transition: 'all 0.1s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: blockCategory === 'completed' 
-                           ? '#000' 
-                           : (blockCategory === 'rest' || blockCategory === 'future') ? 'var(--text-muted)' : '#FFF',
-                    fontSize: '0.7rem',
-                    fontWeight: isToday ? 800 : 500
-                  }}
-                >
-                  {dateObj.getDate()}
-                </button>
+                  dateObj={dateObj}
+                  formattedBlockDate={formattedBlockDate}
+                  safeCompareString={safeCompareString}
+                  matchingWorkoutIndex={matchingWorkoutIndex}
+                  completedWorkouts={completedWorkouts}
+                  isWorkoutScheduled={isWorkoutScheduled}
+                  isSelected={isSelected}
+                  onSelect={setSelectedDay}
+                />
               );
             })}
           </div>
@@ -226,11 +259,31 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {selectedDay.workoutData.exercisesLogged?.map((ex, exIdx) => {
                       if (!ex.loggedSets || ex.loggedSets.length === 0) return null;
+                      const exVolume = ex.loggedSets.reduce((sum, s) => sum + (s.kg * s.reps), 0);
                       return (
-                        <div key={exIdx} style={{ fontSize: '0.9rem', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
-                          <div style={{ fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>{ex.name}</div>
-                          <div style={{ color: 'var(--text-muted)' }}>
-                            {ex.loggedSets.map(s => `${s.kg}kg x ${s.reps}`).join(', ')}
+                        <div key={exIdx} style={{ fontSize: '0.9rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '12px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <div style={{ fontWeight: 700, color: 'var(--text-main)' }}>{ex.name}</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>{exVolume} kg hacim</div>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {ex.loggedSets.map((s, sIdx) => (
+                              <div key={sIdx} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', background: 'rgba(255,255,255,0.02)', borderRadius: '4px' }}>
+                                <div style={{ width: '24px', fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.8rem' }}>{s.set}</div>
+                                <div style={{ flex: 1, fontWeight: 600, color: 'var(--text-main)' }}>{s.kg} <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontWeight:400 }}>kg</span></div>
+                                <div style={{ flex: 1, fontWeight: 600, color: 'var(--text-main)' }}>{s.reps} <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontWeight:400 }}>tekrar</span></div>
+                                {s.rpe && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: getRpeColor(s.rpe), background: `${getRpeColor(s.rpe)}15` }}>
+                                      RPE {s.rpe}
+                                    </span>
+                                    <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>
+                                      {getRIR(s.rpe)} RIR
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         </div>
                       );
@@ -245,4 +298,4 @@ const ActivityHeatmap = ({ completedWorkouts = [], activeProgram }) => {
   );
 };
 
-export default ActivityHeatmap;
+export default memo(ActivityHeatmap);

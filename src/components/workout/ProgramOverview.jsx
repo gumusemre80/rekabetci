@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 
 const ProgramOverview = () => {
   const { session } = useAuth();
@@ -74,16 +74,18 @@ const ProgramOverview = () => {
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
           <h2 style={{ fontSize: '1.75rem', margin: 0 }}>{program.programName}</h2>
-          <button
-            onClick={() => navigate('/workout')}
-            style={{
-              background: 'transparent', border: '1px solid var(--border-color)',
-              color: 'var(--text-muted)', padding: '8px 14px', borderRadius: 'var(--radius-sm)',
-              fontSize: '0.8rem', cursor: 'pointer', whiteSpace: 'nowrap'
-            }}
-          >
-            ← Antrenman
-          </button>
+          <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center' }}>
+        <button
+          className="btn-back"
+          onClick={() => navigate('/workout')}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Antrenman
+        </button>
+      </div>
         </div>
         
         {/* Meta Info Bar */}
@@ -109,8 +111,8 @@ const ProgramOverview = () => {
         {/* Stats Row */}
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ 
-            flex: 1, padding: '1rem', background: 'rgba(0,229,255,0.05)', 
-            border: '1px solid rgba(0,229,255,0.15)', borderRadius: 'var(--radius-sm)', textAlign: 'center' 
+            flex: 1, padding: '1rem', background: 'var(--brand-cyan-dim)', 
+            border: '1px solid var(--brand-cyan-bg)', borderRadius: 'var(--radius-sm)', textAlign: 'center' 
           }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>{program.routine.length}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Antrenman Günü</div>

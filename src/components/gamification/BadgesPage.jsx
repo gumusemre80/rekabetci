@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
-import BADGES, { BADGE_CATEGORIES, CATEGORY_EMOJIS } from '../core/badgeDefinitions';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
+import BADGES, { BADGE_CATEGORIES, CATEGORY_EMOJIS } from '../../core/badgeDefinitions';
 
 const BadgesPage = () => {
   const { session } = useAuth();

@@ -95,11 +95,11 @@ const RestTimer = ({ isActive, onComplete, onSkip }) => {
   const dashoffset = circumference * (1 - ratio);
 
   return (
-    <div style={{
-      padding: '1.25rem', textAlign: 'center',
-      borderTop: '1px solid rgba(255,255,255,0.04)',
-      borderBottom: '1px solid rgba(255,255,255,0.04)',
-      background: finished ? 'rgba(57,255,20,0.03)' : 'rgba(255,255,255,0.01)',
+    <div className="card radial-spotlight radial-spotlight-cyan" style={{ 
+      padding: '1.25rem', 
+      textAlign: 'center',
+      marginBottom: '1rem',
+      background: finished ? 'var(--neon-green-bg)' : 'transparent',
       animation: finished ? 'pulse 1s ease-in-out infinite' : 'none'
     }}>
       {/* Duration Presets */}
@@ -112,7 +112,7 @@ const RestTimer = ({ isActive, onComplete, onSkip }) => {
               padding: '4px 12px', border: 'none', borderRadius: '4px',
               fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer',
               fontFamily: 'var(--font-gaming)', transition: 'all 0.15s ease',
-              background: p === duration ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+              background: p === duration ? 'var(--accent-dim)' : 'var(--bg-panel-hover)',
               color: p === duration ? 'var(--text-main)' : 'var(--text-muted)'
             }}
           >
@@ -126,7 +126,7 @@ const RestTimer = ({ isActive, onComplete, onSkip }) => {
         <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
           {/* Background circle */}
           <circle cx={size/2} cy={size/2} r={radius}
-            fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={stroke}
+            fill="none" stroke="var(--border-color)" strokeWidth={stroke}
           />
           {/* Progress circle */}
           <circle cx={size/2} cy={size/2} r={radius}
@@ -141,10 +141,13 @@ const RestTimer = ({ isActive, onComplete, onSkip }) => {
           position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexDirection: 'column'
         }}>
-          <span style={{
-            fontSize: finished ? '1.1rem' : '1.4rem', fontWeight: 800, color,
-            fontFamily: 'var(--font-gaming)', letterSpacing: '-0.02em'
-          }}>
+          <span
+            className="font-mono"
+            style={{
+              fontSize: finished ? '1.1rem' : '1.4rem', fontWeight: 800, color,
+              fontFamily: 'var(--font-gaming)', letterSpacing: '-0.02em'
+            }}
+          >
             {finished ? '✓' : formatTime(remaining)}
           </span>
           {finished && <span style={{ fontSize: '0.6rem', color: 'var(--neon-green)' }}>HAZIR</span>}
@@ -174,4 +177,4 @@ const RestTimer = ({ isActive, onComplete, onSkip }) => {
   );
 };
 
-export default RestTimer;
+export default React.memo(RestTimer);

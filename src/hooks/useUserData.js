@@ -49,7 +49,7 @@ export const useUserData = () => {
             w.workout_logs.forEach(log => {
                 const name = log.exercises?.name_tr || 'Bilinmeyen Hareket';
                 if (!exMap[name]) exMap[name] = { name, loggedSets: [] };
-                exMap[name].loggedSets.push({ set: log.set_number, kg: log.weight_kg, reps: log.reps });
+                exMap[name].loggedSets.push({ set: log.set_number, kg: log.weight_kg, reps: log.reps, rpe: log.rpe });
             });
             
             Object.values(exMap).forEach(ex => ex.loggedSets.sort((a,b) => a.set - b.set));

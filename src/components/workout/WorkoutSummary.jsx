@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { analyzeWorkout } from '../core/analysisEngine';
-import { checkBadges } from '../core/badgeEngine';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { analyzeWorkout } from '../../core/analysisEngine';
+import { checkBadges } from '../../core/badgeEngine';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 
 const WorkoutSummary = ({ workoutData, onFinish }) => {
   const { session } = useAuth();
@@ -47,7 +47,7 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
         {newBadges.length > 0 && (
           <div className="card" style={{
             borderLeft: '4px solid var(--gold)',
-            backgroundColor: 'rgba(245, 215, 110, 0.05)',
+            backgroundColor: 'var(--gold-dim)',
             animation: 'fadeIn 0.6s ease-out'
           }}>
             <h3 style={{ color: 'var(--gold)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -58,8 +58,8 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
                 <div key={badge.key} style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '10px 14px', borderRadius: 'var(--radius-sm)',
-                  background: 'rgba(245, 215, 110, 0.08)',
-                  border: '1px solid rgba(245, 215, 110, 0.15)',
+                  background: 'var(--gold-dim)',
+                  border: '1px solid var(--gold-bg)',
                   animation: `fadeIn 0.4s ease-out ${i * 0.15}s both`
                 }}>
                   <span style={{ fontSize: '1.5rem' }}>{badge.emoji}</span>
@@ -75,7 +75,7 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
         
         {/* Praise / Positive Reinforcement Box */}
         {analysis.praises.length > 0 && (
-          <div className="card" style={{ borderLeft: '4px solid var(--color-success)', backgroundColor: 'rgba(52, 199, 89, 0.05)' }}>
+          <div className="card" style={{ borderLeft: '4px solid var(--color-success)', backgroundColor: 'var(--color-success-bg)' }}>
              <h3 style={{ color: 'var(--color-success)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 ⭐ Övgüler
              </h3>
@@ -91,7 +91,7 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
 
         {/* Suggestions / Coaching Adjustments Box */}
         {analysis.suggestions.length > 0 && (
-           <div className="card" style={{ borderLeft: '4px solid var(--color-warning)', backgroundColor: 'rgba(255, 149, 0, 0.05)' }}>
+           <div className="card" style={{ borderLeft: '4px solid var(--color-warning)', backgroundColor: 'var(--color-warning-bg)' }}>
              <h3 style={{ color: 'var(--color-warning)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 📈 Gelişim Tavsiyeleri
              </h3>
@@ -116,7 +116,7 @@ const WorkoutSummary = ({ workoutData, onFinish }) => {
             );
 
             return (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ fontWeight: 500 }}>{ex.name}</span>
                 <span style={{ color: 'var(--accent)' }}>Top Set: {bestSet.kg}kg</span>
               </div>

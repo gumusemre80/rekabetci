@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../core/supabaseClient';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '../../core/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 
 const FORMULAS = [
   { key: 'epley', label: 'Epley', calc: (w, r) => r === 1 ? w : w * (1 + r / 30) },
